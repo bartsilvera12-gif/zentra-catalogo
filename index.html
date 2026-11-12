@@ -194,7 +194,14 @@ function waNumero(t) {
 
 async function leer(vista, query) {
   const r = await fetch(`${SUPABASE}/rest/v1/${vista}?${query}`, {
-    headers: { apikey: ANON, Authorization: `Bearer ${ANON}` },
+    headers: {
+      apikey: ANON,
+      Authorization: `Bearer ${ANON}`,
+      // El schema va en la cabecera y no en la ruta. Sin esto PostgREST busca
+      // en `public`, que es donde no está nada de esto, y contesta "no
+      // encontré la tabla" con un 404 que parece un catálogo inexistente.
+      "Accept-Profile": "zentra",
+    },
   });
   if (!r.ok) throw new Error(`${vista}: ${r.status}`);
   return r.json();
